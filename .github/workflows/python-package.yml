@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install uv
-          uv pip install --system --extra dev .
+          uv pip install --system '.[dev]'
       - name: Lint with ruff
         run: |
           uv run ruff check .
