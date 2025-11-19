@@ -66,3 +66,9 @@ def test(ctx, match: str = ""):
 def run_notebook(ctx, path: str = "notebooks/usage_example.py"):
     """Run a notebook."""
     ctx.run(f"marimo run {path}", pty=True)
+
+
+@duty
+def bump_version(ctx, part: str):
+    """Bump the version of the project."""
+    ctx.run(f"bump-my-version bump {part}", title=f"Bumping version {part}")

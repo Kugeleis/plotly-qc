@@ -10,3 +10,4 @@ wheels/
 .venv
 .coverage
 notebooks/__marimo__/
+coverage.xml

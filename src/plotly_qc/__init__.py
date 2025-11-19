@@ -6,6 +6,3 @@ from .plotting import plot_engineering_data
 __all__ = [
     "plot_engineering_data",
 ]
-
-# Optional: keep package metadata
-__version__ = "0.1.0"

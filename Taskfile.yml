@@ -30,3 +30,9 @@ tasks:
       - task: lint
       - task: test
     desc: "Run lint and tests."
+  bump-version:
+    cmds:
+      - uv run duty bump-version {{.part}}
+    desc: "Bump the version of the project (e.g., major, minor, patch)."
+    vars:
+      part: '{{.CLI_ARGS}}' # This captures the arguments passed after the task name
