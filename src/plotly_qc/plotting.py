@@ -1,26 +1,28 @@
-import plotly.express as px
+from typing import Any, Dict, Literal, Protocol
+
 import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
 
 
-def plot_engineering_data(
-    df_data, df_specs, column_name, plot_type="box", group_by=None
-):
-    """
-    Erstellt einen Plot (Boxplot oder ECDF) mit automatisch eingezeichneten Spezifikationsgrenzen.
+# Define a protocol for plotters
+class Plotter(Protocol):
+    """Protocol for creating a plot."""
 
-    Args:
-        df_data (pd.DataFrame): Tabelle mit den Messwerten.
-        df_specs (pd.DataFrame): Tabelle mit Limits. Muss Indizes wie 'LSL', 'USL', 'Target' haben. Spaltennamen müssen mit df_data übereinstimmen.
-        column_name (str): Der Name der Spalte, die analysiert werden soll.
-        plot_type (str): 'box' oder 'ecdf'.
-        group_by (str, optional): Spalte für Gruppierung (z.B. 'Charge' oder 'Maschine').
+    def create_plot(
+        self, df_data: pd.DataFrame, column_name: str, group_by: str | None
+    ) -> tuple[go.Figure, Literal["h", "v"]]:
+        """Creates a plot and returns the figure and line orientation."""
+        ...
 
-    Returns:
-        plotly.graph_objects.Figure
-    """
 
-    # 1. Basis-Plot erstellen
-    if plot_type == "box":
+# Concrete implementation for Box Plot
+class BoxPlotter:
+    """A plotter for creating box plots."""
+
+    def create_plot(
+        self, df_data: pd.DataFrame, column_name: str, group_by: str | None
+    ) -> tuple[go.Figure, Literal["h", "v"]]:
         fig = px.box(
             df_data,
             y=column_name,
@@ -28,40 +30,56 @@ def plot_engineering_data(
             color=group_by,
             title=f"Boxplot: {column_name}",
         )
-        orientation = "h"  # Horizontal lines needed
+        return fig, "h"
 
-    elif plot_type == "ecdf":
+
+# Concrete implementation for ECDF Plot
+class EcdfPlotter:
+    """A plotter for creating ECDF plots."""
+
+    def create_plot(
+        self, df_data: pd.DataFrame, column_name: str, group_by: str | None
+    ) -> tuple[go.Figure, Literal["h", "v"]]:
         fig = px.ecdf(
             df_data,
             x=column_name,
             color=group_by,
             title=f"Cumulative Frequency: {column_name}",
         )
-        orientation = "v"  # Vertical lines needed
+        return fig, "v"
 
+
+# Factory to get the plotter
+def get_plotter(plot_type: str) -> Plotter:
+    """Factory function to get the appropriate plotter."""
+    if plot_type == "box":
+        return BoxPlotter()
+    elif plot_type == "ecdf":
+        return EcdfPlotter()
     else:
-        raise ValueError("plot_type muss 'box' oder 'ecdf' sein.")
+        raise ValueError("plot_type must be 'box' or 'ecdf'.")
 
-    # 2. Spezifikationen auslesen (Fehlertolerant)
-    # Wir versuchen, die Werte aus dem Spec-Dataframe zu holen.
-    # Wenn der Wert NaN ist oder die Spalte fehlt, passiert nichts.
-    specs_to_draw = {
+
+def _add_spec_lines(
+    fig: go.Figure,
+    df_specs: pd.DataFrame,
+    column_name: str,
+    orientation: Literal["h", "v"],
+):
+    """Adds specification lines to a plot."""
+    specs_to_draw: Dict[str, Dict[str, Any]] = {
         "LSL": {"color": "red", "dash": "dash"},
-        "Target": {"color": "green", "dash": "dot"},  # oder 'solid'
+        "Target": {"color": "green", "dash": "dot"},
         "USL": {"color": "red", "dash": "dash"},
     }
 
     if column_name in df_specs.columns:
         for spec_name, style in specs_to_draw.items():
             try:
-                # Versuchen, den Wert über den Index (z.B. "LSL") zu greifen
                 if spec_name in df_specs.index:
                     val = df_specs.loc[spec_name, column_name]
-
-                    # Nur zeichnen, wenn val eine gültige Zahl ist (kein NaN)
                     if pd.notna(val):
                         annotation = f"{spec_name}: {val}"
-
                         if orientation == "h":
                             fig.add_hline(
                                 y=val,
@@ -78,6 +96,31 @@ def plot_engineering_data(
                                 annotation_position="top right",
                             )
             except Exception as e:
-                print(f"Konnte {spec_name} nicht zeichnen: {e}")
+                print(f"Could not draw {spec_name}: {e}")
 
+
+def plot_engineering_data(
+    df_data: pd.DataFrame,
+    df_specs: pd.DataFrame,
+    column_name: str,
+    plot_type: str = "box",
+    group_by: str | None = None,
+) -> go.Figure:
+    """
+    Creates a plot (Boxplot or ECDF) with automatically drawn specification limits.
+
+    Args:
+        df_data (pd.DataFrame): Table with the measurement values.
+        df_specs (pd.DataFrame): Table with limits. Must have indices like 'LSL', 'USL', 'Target'.
+                                 Column names must match df_data.
+        column_name (str): The name of the column to be analyzed.
+        plot_type (str): 'box' or 'ecdf'.
+        group_by (str, optional): Column for grouping (e.g., 'Charge' or 'Machine').
+
+    Returns:
+        plotly.graph_objects.Figure
+    """
+    plotter = get_plotter(plot_type)
+    fig, orientation = plotter.create_plot(df_data, column_name, group_by)
+    _add_spec_lines(fig, df_specs, column_name, orientation)
     return fig

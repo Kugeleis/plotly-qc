@@ -57,6 +57,12 @@ def test_plot_engineering_data_spec_lines(sample_data, sample_specs):
     assert len(fig.layout.shapes) == 3
 
 
+def test_plot_engineering_data_spec_lines_ecdf(sample_data, sample_specs):
+    """Test if specification lines are added to the ecdf plot."""
+    fig = plot_engineering_data(sample_data, sample_specs, "value", plot_type="ecdf")
+    # Check for 3 vertical lines (LSL, USL, Target)
+    assert len(fig.layout.shapes) == 3
+
 def test_plot_engineering_data_missing_specs(sample_data):
     """Test that no lines are drawn if specs are missing."""
     empty_specs = pd.DataFrame()
@@ -75,3 +81,11 @@ def test_plot_engineering_data_invalid_plot_type(sample_data, sample_specs):
     """Test if a ValueError is raised for an invalid plot_type."""
     with pytest.raises(ValueError):
         plot_engineering_data(sample_data, sample_specs, "value", plot_type="invalid")
+
+
+def test_add_spec_lines_exception(sample_data, capsys):
+    """Test the exception handling in _add_spec_lines."""
+    invalid_specs = pd.DataFrame({"value": {"LSL": "not-a-number"}})
+    plot_engineering_data(sample_data, invalid_specs, "value")
+    captured = capsys.readouterr()
+    assert "Could not draw LSL" in captured.out
