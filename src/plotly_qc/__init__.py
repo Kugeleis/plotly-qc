@@ -1,2 +1,11 @@
-def main() -> None:
-    print("Hello from plotly-qc!")
+# pyqcplot/__init__.py
+
+from .plotting import plot_engineering_data
+
+# Explicitly define the public API names to fix the Ruff F401 warning
+__all__ = [
+    "plot_engineering_data",
+]
+
+# Optional: keep package metadata
+__version__ = "0.1.0"
