@@ -271,13 +271,13 @@ def _(mo):
 
 @app.cell
 def _():
-    count = 0
+    count = 0  # noqa: F841
     return
 
 
 @app.cell
 def _():
-    count += 1
+    count += 1  # noqa: F821, F841
     return
 
 
@@ -299,21 +299,21 @@ def _(mo):
 @app.cell
 def _():
     _private_variable, _ = 1, 2
-    _private_variable, _
+    _private_variable, _  # noqa: F821
     return
 
 
 @app.cell
 def _():
     _private_variable, _ = 3, 4
-    _private_variable, _
+    _private_variable, _  # noqa: F821
     return
 
 
 @app.cell
 def _():
     # `_private_variable` and `_` are not defined in this cell
-    _private_variable, _
+    _private_variable, _  # noqa: F821
     return
 
 
@@ -492,6 +492,7 @@ def _(mo):
 def _():
     import matplotlib.pyplot as plt
     import numpy as np
+
     return np, plt
 
 
@@ -600,6 +601,7 @@ def _():
 @app.cell
 def _():
     import marimo as mo
+
     return (mo,)
 
 

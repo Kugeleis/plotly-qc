@@ -17,6 +17,7 @@ def _():
     import numpy as np
     import pandas as pd
     from plotly_qc.plotting import plot_engineering_data
+
     return np, pd, plot_engineering_data
 
 
@@ -88,7 +89,7 @@ def _(df_data, df_specs, mo, plot_engineering_data):
         "Here is a simple box plot of the `value` column with the specification "
         "limits drawn."
     )
-    fig_box = plot_engineering_data(df_data, df_specs, "value", plot_type="box")
+    plot_engineering_data(df_data, df_specs, "value", plot_type="box")
     return
 
 
@@ -99,7 +100,9 @@ def _(df_data, df_specs, mo, plot_engineering_data):
         "Here is an ECDF plot of the `value` column with the specification "
         "limits drawn."
     )
-    fig_ecdf = plot_engineering_data(df_data, df_specs, "value", plot_type="ecdf",group_by="group")
+    fig_ecdf = plot_engineering_data(
+        df_data, df_specs, "value", plot_type="ecdf", group_by="group"
+    )
     mo.md(f"""
     {mo.as_html(fig_ecdf)}
 
