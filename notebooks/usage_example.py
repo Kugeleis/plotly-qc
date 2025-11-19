@@ -88,7 +88,7 @@ def _(df_data, df_specs, mo, plot_engineering_data):
         "Here is a simple box plot of the `value` column with the specification "
         "limits drawn."
     )
-    fig_box = plot_engineering_data(df_data, df_specs, "value", plot_type="box")
+    plot_engineering_data(df_data, df_specs, "value", plot_type="box")
     return
 
 

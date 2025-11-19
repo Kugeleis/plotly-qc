@@ -39,7 +39,7 @@ def _(mo):
     mo.accordion(
         {
             "Tip: disabling automatic execution": mo.md(
-                rf"""
+                r"""
             marimo lets you disable automatic execution: in the notebook
             footer, change "On Cell Change" to "lazy".
 
