@@ -492,6 +492,7 @@ def _(mo):
 def _():
     import matplotlib.pyplot as plt
     import numpy as np
+
     return np, plt
 
 
@@ -600,6 +601,7 @@ def _():
 @app.cell
 def _():
     import marimo as mo
+
     return (mo,)
 
 
