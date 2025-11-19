@@ -63,6 +63,7 @@ def test_plot_engineering_data_spec_lines_ecdf(sample_data, sample_specs):
     # Check for 3 vertical lines (LSL, USL, Target)
     assert len(fig.layout.shapes) == 3
 
+
 def test_plot_engineering_data_missing_specs(sample_data):
     """Test that no lines are drawn if specs are missing."""
     empty_specs = pd.DataFrame()

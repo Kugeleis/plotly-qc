@@ -1,0 +1,32 @@
+version: '3'
+
+tasks:
+  install:
+    cmds:
+      - uv run duty install
+    desc: "Install dependencies."
+  install-dev:
+    cmds:
+      - uv run duty install-dev
+    desc: "Install dev dependencies."
+  lint:
+    cmds:
+      - uv run duty lint
+    desc: "Lint and format the code."
+  test:
+    cmds:
+      - uv run duty test
+    desc: "Run tests."
+  clean:
+    cmds:
+      - uv run duty clean
+    desc: "Clean cache and temporary files."
+  run-notebook:
+    cmds:
+      - uv run duty run-notebook
+    desc: "Run a notebook."
+  default:
+    cmds:
+      - task: lint
+      - task: test
+    desc: "Run lint and tests."

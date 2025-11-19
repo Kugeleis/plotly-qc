@@ -29,4 +29,5 @@ dev = [
     "pytest>=9.0.1",
     "pytest-cov>=7.0.0",
     "ruff>=0.14.5",
+    "pytest-xdist>=3.6.1",
 ]
